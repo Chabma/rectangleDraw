@@ -1,7 +1,7 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
-import Point from './point.js'
+import Head from "next/head"
+import Image from "next/image"
+import styles from "../styles/Home.module.css"
+import Point from "./point.js"
 
 export default function Home() {
     
@@ -18,14 +18,14 @@ export default function Home() {
 
   /* Create a point (fired when the canvas is clicked)*/
   let createPoint = (event) => {
-        let canvas = document.getElementById('canvas');
+        let canvas = document.getElementById("canvas");
         let canvasBox = canvas.getBoundingClientRect();
         
         //create new point
-        let newPoint = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        setAttributes(newPoint, {'cx': event.clientX - canvasBox.left,
-                                 'cy': event.clientY - canvasBox.top,
-                                 'r':4} );
+        let newPoint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        setAttributes(newPoint, {"cx": event.clientX - canvasBox.left,
+                                 "cy": event.clientY - canvasBox.top,
+                                 "r":4} );
         canvas.appendChild(newPoint);
         
         //update globals to add point
@@ -49,14 +49,14 @@ export default function Home() {
 
   /*Draw a line (when two points for a rectangle are drawn)*/
   let drawLine = (pt1, pt2) => {
-    let canvas = document.getElementById('canvas');
-    let newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    let canvas = document.getElementById("canvas");
+    let newLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
     //create line
-    setAttributes(newLine, {'x1': pt1.cx.baseVal.value,
-                                 'y1': pt1.cy.baseVal.value,
-                                 'x2': pt2.cx.baseVal.value,
-                                 'y2': pt2.cy.baseVal.value} );
+    setAttributes(newLine, {"x1": pt1.cx.baseVal.value,
+                            "y1": pt1.cy.baseVal.value,
+                            "x2": pt2.cx.baseVal.value,
+                            "y2": pt2.cy.baseVal.value} );
 
     //add line to canvas and globals
     canvas.appendChild(newLine);
@@ -98,12 +98,12 @@ export default function Home() {
 
     // redraw points and lines based on new locations
     ////points
-    setAttributes(pointsList[2], {'cx': pt3X, 'cy': pt3Y});
-    setAttributes(pointsList[3], {'cx': pt4X, 'cy': pt4Y});
+    setAttributes(pointsList[2], {"cx": pt3X, "cy": pt3Y});
+    setAttributes(pointsList[3], {"cx": pt4X, "cy": pt4Y});
     ////lines
-    setAttributes(linesList[1], {'x2': pt3X, 'y2': pt3Y});
-    setAttributes(linesList[2], {'x1': pt3X, 'y1': pt3Y, 'x2': pt4X, 'y2': pt4Y});
-    setAttributes(linesList[3], {'x1': pt4X, 'y1': pt4Y});
+    setAttributes(linesList[1], {"x2": pt3X, "y2": pt3Y});
+    setAttributes(linesList[2], {"x1": pt3X, "y1": pt3Y, "x2": pt4X, "y2": pt4Y});
+    setAttributes(linesList[3], {"x1": pt4X, "y1": pt4Y});
 
     // remove elements to reset now that rectangle is drawn
     pointsCount = 0;
@@ -121,7 +121,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-            Cabma's Rectangle Creator
+            Cabma"s Rectangle Creator
         </h1>
 
         <div className={styles.description}>
@@ -138,7 +138,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <span className={styles.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
