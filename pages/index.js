@@ -121,7 +121,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-            Cabma"s Rectangle Creator
+            Cabma Rectangle Creator
         </h1>
 
         <div className={styles.description}>
@@ -144,7 +144,6 @@ export default function Home() {
           </span>
         </a>
       </footer>
-      <script src="https://d3js.org/d3.v4.min.js"></script>
     </div>
   )
 }
