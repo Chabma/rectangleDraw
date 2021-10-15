@@ -1,8 +1,116 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import Point from './point.js'
 
 export default function Home() {
+    
+  let pointsCount = 0;
+  let pointsList = [];
+  let linesList = []
+ 
+  let setAttributes = (elem, attrs) => {
+    //got this code idea from https://stackoverflow.com/questions/12274748/setting-multiple-attributes-for-an-element-at-once-with-javascript
+    for(var key in attrs) {
+        elem.setAttributeNS(null, key, attrs[key]);
+    } 
+  }
+
+  /* Create a point (fired when the canvas is clicked)*/
+  let createPoint = (event) => {
+        let canvas = document.getElementById('canvas');
+        let canvasBox = canvas.getBoundingClientRect();
+        
+        //create new point
+        let newPoint = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        setAttributes(newPoint, {'cx': event.clientX - canvasBox.left,
+                                 'cy': event.clientY - canvasBox.top,
+                                 'r':4} );
+        canvas.appendChild(newPoint);
+        
+        //update globals to add point
+        pointsCount++;
+        pointsList.push(newPoint);
+        updateCanvas();
+  }
+
+  /*Update Canvas after user actions */
+  let updateCanvas = () => {
+    //draw a line if there are two points
+    if (pointsCount > 1){
+        drawLine(pointsList[ pointsList.length - 2], pointsList[pointsList.length - 1]);
+    }
+    //draw rectangle if there are four points
+    if(pointsCount % 4 === 0){
+        drawLine(pointsList[3], pointsList[0]);
+        drawRectangle();
+    }
+  }
+
+  /*Draw a line (when two points for a rectangle are drawn)*/
+  let drawLine = (pt1, pt2) => {
+    let canvas = document.getElementById('canvas');
+    let newLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+
+    //create line
+    setAttributes(newLine, {'x1': pt1.cx.baseVal.value,
+                                 'y1': pt1.cy.baseVal.value,
+                                 'x2': pt2.cx.baseVal.value,
+                                 'y2': pt2.cy.baseVal.value} );
+
+    //add line to canvas and globals
+    canvas.appendChild(newLine);
+    linesList.push(newLine);
+  }
+
+  let drawRectangle = () => {
+    // use the line between point 1 and 2 to determine the slope for drawing the rectangle
+    //// tougher option would be to identify a best side to base this off, but the first drawn side is simpler
+    let rise = pointsList[0].cy.baseVal.value - pointsList[1].cy.baseVal.value;
+    let run = pointsList[0].cx.baseVal.value - pointsList[1].cx.baseVal.value;
+    let slope = rise / run;
+
+    // get the average distance of points 3 and 4 from the first line
+    let dist1 = Math.sqrt((pointsList[3].cy.baseVal.value - pointsList[0].cy.baseVal.value)**2 + (pointsList[3].cx.baseVal.value - pointsList[0].cx.baseVal.value)**2);
+    let dist2 = Math.sqrt((pointsList[2].cy.baseVal.value - pointsList[1].cy.baseVal.value)**2 + (pointsList[2].cx.baseVal.value - pointsList[1].cx.baseVal.value)**2);
+    let distAvg = (dist1 + dist2) / 2;
+
+    // determine the locations for points 3 and 4 based on the distance and slope
+    //// simple math solution: depending on which would be more accurate, set rise or run equal to total distance
+    let riseDist, runDist;
+    if(Math.abs(slope) > 1){
+        //set run equal to total distance
+        if(pointsList[0].cx.baseVal.value > pointsList[3].cx.baseVal.value){distAvg = -distAvg}
+        riseDist = distAvg * -(1 / slope);
+        runDist = distAvg;
+    }
+    else{
+        //setkeep rise equal to total distance
+        if(pointsList[0].cy.baseVal.value > pointsList[3].cy.baseVal.value){distAvg = -distAvg}
+        runDist = distAvg * -slope;
+        riseDist = distAvg;
+    }
+    let pt3X = pointsList[1].cx.baseVal.value + runDist;
+    let pt3Y = pointsList[1].cy.baseVal.value + riseDist
+    let pt4X = pointsList[0].cx.baseVal.value + runDist;
+    let pt4Y = pointsList[0].cy.baseVal.value + riseDist;
+
+
+    // redraw points and lines based on new locations
+    ////points
+    setAttributes(pointsList[2], {'cx': pt3X, 'cy': pt3Y});
+    setAttributes(pointsList[3], {'cx': pt4X, 'cy': pt4Y});
+    ////lines
+    setAttributes(linesList[1], {'x2': pt3X, 'y2': pt3Y});
+    setAttributes(linesList[2], {'x1': pt3X, 'y1': pt3Y, 'x2': pt4X, 'y2': pt4Y});
+    setAttributes(linesList[3], {'x1': pt4X, 'y1': pt4Y});
+
+    // remove elements to reset now that rectangle is drawn
+    pointsCount = 0;
+    pointsList = [];
+    linesList  = [];
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,43 +121,15 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+            Cabma's Rectangle Creator
         </h1>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        <div className={styles.description}>
+            <p>In the canvas below create rectangles by clicking to create points </p>
         </div>
+
+        <svg id="canvas" className={styles.canvas} onClick={createPoint}>
+        </svg>
       </main>
 
       <footer className={styles.footer}>
@@ -64,6 +144,7 @@ export default function Home() {
           </span>
         </a>
       </footer>
+      <script src="https://d3js.org/d3.v4.min.js"></script>
     </div>
   )
 }

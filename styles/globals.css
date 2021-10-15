@@ -14,3 +14,20 @@ a {
 * {
   box-sizing: border-box;
 }
+
+circle {
+  stroke-width: 2;
+  stroke: #000;
+  fill: #fff;
+}
+
+line {
+  stroke-width: 3;
+  stroke: #000;
+}
+
+rect {
+  stroke-width: 3;
+  stroke: #000;
+  fill: #fff;
+}
